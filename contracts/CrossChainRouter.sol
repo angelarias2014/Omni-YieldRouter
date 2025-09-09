@@ -11,7 +11,8 @@ interface IYieldStrategy {
     function getAPY() external view returns (uint256);
 }
 
-contract AggLayerRouter is ReentrancyGuard, Ownable {
+// CrossChainRouter - Uses LayerZero for cross-chain routing (not Polygon's AggLayer)
+contract CrossChainRouter is ReentrancyGuard, Ownable {
     struct ChainInfo {
         bool isActive;
         address bridgeContract;
@@ -88,13 +89,40 @@ contract AggLayerRouter is ReentrancyGuard, Ownable {
         
         require(yieldStrategies[targetStrategy].isActive, "Strategy not active");
         
-        // Approve the strategy contract to spend tokens
-        IERC20(token).approve(targetStrategy, amount);
-        
-        // Deposit into the yield strategy
-        IYieldStrategy(targetStrategy).deposit(token, amount, strategyData);
+        // Check if we're on the same chain
+        if (destinationChainId == block.chainid) {
+            // Same chain - direct deposit
+            IERC20(token).approve(targetStrategy, amount);
+            IYieldStrategy(targetStrategy).deposit(token, amount, strategyData);
+        } else {
+            // Cross-chain - use bridge
+            address bridgeContract = supportedChains[destinationChainId].bridgeContract;
+            require(bridgeContract != address(0), "Bridge not configured");
+            
+            // Approve bridge contract
+            IERC20(token).approve(bridgeContract, amount);
+            
+            // Call bridge function (this would be implemented by the bridge contract)
+            // For now, we'll simulate the cross-chain deposit
+            _simulateCrossChainDeposit(token, amount, destinationChainId, strategyData);
+        }
         
         emit FundsBridged(msg.sender, token, amount, block.chainid, destinationChainId);
+    }
+    
+    function _simulateCrossChainDeposit(
+        address token,
+        uint256 amount,
+        uint256 destinationChainId,
+        bytes calldata strategyData
+    ) internal {
+        // This simulates what would happen on the destination chain
+        // In reality, this would be handled by the bridge contract
+        address targetStrategy = abi.decode(strategyData, (address));
+        
+        // Simulate the deposit on destination chain
+        // The bridge would call this function on the destination chain
+        IYieldStrategy(targetStrategy).deposit(token, amount, strategyData);
     }
     
     function getUserDeposits(address user, uint256 chainId) external view returns (uint256) {

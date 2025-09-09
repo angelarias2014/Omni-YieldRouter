@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { FunctionsClient } from "@chainlink/functions/contracts/FunctionsClient.sol";
-import { FunctionsRequest } from "@chainlink/functions/contracts/FunctionsRequest.sol";
+import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol";
+import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsRequest.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IAggLayerRouter {
+interface ICrossChainRouter {
     function routeFunds(address token, uint256 amount, uint256 destinationChainId, bytes calldata callData) external;
     function getUserDeposits(address user, uint256 chainId) external view returns (uint256);
     function getBestYieldStrategy() external view returns (address bestStrategy, uint256 bestAPY);
@@ -16,7 +16,7 @@ interface IAggLayerRouter {
 contract YieldRouter is FunctionsClient, ReentrancyGuard, Ownable {
     using FunctionsRequest for FunctionsRequest.Request;
 
-    IAggLayerRouter public agglayer;
+    ICrossChainRouter public crossChainRouter;
     uint64 public subscriptionId;
     bytes32 public latestRequestId;
     string public latestAPY;
@@ -29,8 +29,8 @@ contract YieldRouter is FunctionsClient, ReentrancyGuard, Ownable {
     event DepositMade(address indexed user, address token, uint256 amount, uint256 chainId);
     event APYUpdated(string newAPY);
 
-    constructor(address _agglayer, address _functionsRouter, uint64 _subscriptionId) FunctionsClient(_functionsRouter) Ownable(msg.sender) {
-        agglayer = IAggLayerRouter(_agglayer);
+    constructor(address _crossChainRouter, address _functionsRouter, uint64 _subscriptionId) FunctionsClient(_functionsRouter) Ownable(msg.sender) {
+        crossChainRouter = ICrossChainRouter(_crossChainRouter);
         subscriptionId = _subscriptionId;
     }
 
@@ -43,9 +43,9 @@ contract YieldRouter is FunctionsClient, ReentrancyGuard, Ownable {
         deposits[msg.sender] += amount;
         userDepositsByChain[msg.sender][toChainId] += amount;
 
-        // Route funds through AggLayer
-        IERC20(token).approve(address(agglayer), amount);
-        agglayer.routeFunds(token, amount, toChainId, strategyData);
+        // Route funds through CrossChain Router
+        IERC20(token).approve(address(crossChainRouter), amount);
+        crossChainRouter.routeFunds(token, amount, toChainId, strategyData);
         
         emit DepositMade(msg.sender, token, amount, toChainId);
     }
@@ -60,15 +60,21 @@ contract YieldRouter is FunctionsClient, ReentrancyGuard, Ownable {
     }
     
     function getBestYieldStrategy() external view returns (address bestStrategy, uint256 bestAPY) {
-        return agglayer.getBestYieldStrategy();
+        return crossChainRouter.getBestYieldStrategy();
     }
 
-    function requestAPYData(string calldata source, bytes calldata secrets, string[] calldata args) external {
+    function requestAPYData() external {
+        // Inline JavaScript to fetch APY data from multiple sources
+        string memory source = 
+            "const aaveAPY = await fetch('https://aave-api-v2.aave.com/data/liquidity/v2?poolId=mainnet').then(r => r.json()).then(data => data.reserves[0].liquidityRate * 100);"
+            "const yearnAPY = await fetch('https://api.yearn.finance/v1/chains/1/vaults/all').then(r => r.json()).then(data => data[0].apy.net_apy * 100);"
+            "const beefyAPY = await fetch('https://api.beefy.finance/apy').then(r => r.json()).then(data => Object.values(data)[0] * 100);"
+            "const bestAPY = Math.max(aaveAPY, yearnAPY, beefyAPY);"
+            "return Functions.encodeString(bestAPY.toString());";
+        
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(source);
-        if (args.length > 0) req.setArgs(args);
-        if (secrets.length > 0) req.addInlineSecrets(secrets);
-
+        
         latestRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, 200000);
     }
 

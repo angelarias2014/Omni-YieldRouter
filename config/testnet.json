@@ -1,0 +1,90 @@
+{
+  "networks": {
+    "sepolia": {
+      "chainId": 11155111,
+      "name": "Ethereum Sepolia",
+      "rpcUrl": "https://sepolia.infura.io/v3/YOUR_INFURA_KEY",
+      "explorer": "https://sepolia.etherscan.io"
+    },
+    "mumbai": {
+      "chainId": 80001,
+      "name": "Polygon Mumbai",
+      "rpcUrl": "https://polygon-mumbai.infura.io/v3/YOUR_INFURA_KEY",
+      "explorer": "https://mumbai.polygonscan.com"
+    },
+    "optimismGoerli": {
+      "chainId": 420,
+      "name": "Optimism Goerli",
+      "rpcUrl": "https://goerli.optimism.io",
+      "explorer": "https://goerli-optimism.etherscan.io"
+    },
+    "baseGoerli": {
+      "chainId": 84531,
+      "name": "Base Goerli",
+      "rpcUrl": "https://goerli.base.org",
+      "explorer": "https://goerli.basescan.org"
+    }
+  },
+  "protocols": {
+    "aave": {
+      "v3": {
+        "sepolia": {
+          "pool": "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
+          "usdc": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+          "ausdc": "0x16dA4541aD1807f4443d92D26044C1147406EB80"
+        },
+        "mumbai": {
+          "pool": "0x1758d4e6f68166C4B2d9d0F25F2bc543428d0F60",
+          "usdc": "0x2058A9D7613eEE744279e3856Ef0eAda5FCbaA7e",
+          "ausdc": "0x2271e3Fef9e15046d09E1d78a8FF038c691E9Cf9"
+        }
+      }
+    },
+    "yearn": {
+      "vaults": {
+        "sepolia": {
+          "usdc": "0x...", // Yearn doesn't have testnet vaults
+          "note": "Yearn typically doesn't deploy to testnets"
+        }
+      }
+    },
+    "beefy": {
+      "vaults": {
+        "sepolia": {
+          "usdc": "0x...", // Beefy doesn't have testnet vaults
+          "note": "Beefy typically doesn't deploy to testnets"
+        }
+      }
+    }
+  },
+  "bridges": {
+    "layerzero": {
+      "endpoints": {
+        "sepolia": "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+        "mumbai": "0xf69186dfBa60DdB133E91E9A4B5673624293d8F8",
+        "optimismGoerli": "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+        "baseGoerli": "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab"
+      },
+      "chainIds": {
+        "sepolia": 40161,
+        "mumbai": 40109,
+        "optimismGoerli": 40132,
+        "baseGoerli": 40145
+      }
+    }
+  },
+  "chainlink": {
+    "functions": {
+      "router": "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
+      "subscriptionId": 0
+    }
+  },
+  "tokens": {
+    "usdc": {
+      "sepolia": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+      "mumbai": "0x2058A9D7613eEE744279e3856Ef0eAda5FCbaA7e",
+      "optimismGoerli": "0x...",
+      "baseGoerli": "0x..."
+    }
+  }
+}

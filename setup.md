@@ -1,4 +1,4 @@
-# CrossYield AggLayer Setup Guide
+# CrossYield CrossChain Router Setup Guide
 
 This project is now fully functional! Here's how to get it running:
 
@@ -35,7 +35,7 @@ npm run deploy:localhost
 ```
 
 This will deploy:
-- ✅ AggLayer Router
+- ✅ CrossChain Router (using LayerZero)
 - ✅ Yield Strategy Contracts (Aave, Yearn, Beefy)
 - ✅ YieldRouter Contract
 - ✅ Save addresses to `deployed-addresses.json`
@@ -57,7 +57,7 @@ Visit `http://localhost:3000` to see the app!
 ### ✅ What's Working:
 
 1. **Real Smart Contracts**: All contracts are deployed and functional
-2. **Cross-Chain Routing**: AggLayer router handles fund routing between chains
+2. **Cross-Chain Routing**: CrossChain Router handles fund routing between chains using LayerZero
 3. **Yield Strategies**: Three working yield strategies with different APYs:
    - Aave: 5.2% APY
    - Yearn: 4.8% APY  

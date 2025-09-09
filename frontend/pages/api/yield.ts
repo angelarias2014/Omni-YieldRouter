@@ -8,7 +8,7 @@ type YieldData = {
 };
 
 // Contract ABIs (simplified)
-const AGGLAYER_ABI = [
+const CROSSCHAIN_ROUTER_ABI = [
   "function getBestYieldStrategy() external view returns (address bestStrategy, uint256 bestAPY)",
   "function yieldStrategies(address) external view returns (address strategyContract, bool isActive, uint256 apy, string name)"
 ];
@@ -31,9 +31,9 @@ export default async function handler(
     } catch (error) {
       // Fallback to mock data if no deployed addresses
       const yieldOptions = [
-        { chain: 'Polygon', protocol: 'Aave', apy: 5.2, address: '0x...' },
-        { chain: 'Optimism', protocol: 'Yearn', apy: 4.8, address: '0x...' },
-        { chain: 'Base', protocol: 'Beefy', apy: 6.1, address: '0x...' },
+        { chain: 'Sepolia', protocol: 'Aave', apy: 5.2, address: '0x...' },
+        { chain: 'Mumbai', protocol: 'Yearn', apy: 4.8, address: '0x...' },
+        { chain: 'Optimism Goerli', protocol: 'Beefy', apy: 6.1, address: '0x...' },
       ];
 
       const bestOption = yieldOptions.reduce((prev, current) => (prev.apy > current.apy) ? prev : current);
@@ -48,43 +48,73 @@ export default async function handler(
     const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
     
     // Create contract instance
-    const agglayerContract = new ethers.Contract(
-      deployedAddresses.agglayerRouter,
-      AGGLAYER_ABI,
+    const crossChainRouterContract = new ethers.Contract(
+      deployedAddresses.crossChainRouter,
+      CROSSCHAIN_ROUTER_ABI,
       provider
     );
 
     // Get yield strategies
     const strategies = [
-      { address: deployedAddresses.aaveStrategy, name: 'Aave', chain: 'Polygon' },
-      { address: deployedAddresses.yearnStrategy, name: 'Yearn', chain: 'Optimism' },
-      { address: deployedAddresses.beefyStrategy, name: 'Beefy', chain: 'Base' }
+      { address: deployedAddresses.aaveStrategy, name: 'Aave', chain: 'Sepolia' },
+      { address: deployedAddresses.yearnStrategy, name: 'Yearn', chain: 'Mumbai' },
+      { address: deployedAddresses.beefyStrategy, name: 'Beefy', chain: 'Optimism Goerli' }
     ];
 
     const yieldOptions = [];
     
-    for (const strategy of strategies) {
-      try {
-        const strategyContract = new ethers.Contract(strategy.address, STRATEGY_ABI, provider);
-        const apy = await strategyContract.getAPY();
-        const apyPercent = Number(ethers.utils.formatUnits(apy, 2)); // Convert from basis points
-        
+    // Try to fetch real APY data from external APIs first
+    try {
+      const [aaveResponse, yearnResponse, beefyResponse] = await Promise.allSettled([
+        fetch('https://aave-api-v2.aave.com/data/liquidity/v2?poolId=mainnet'),
+        fetch('https://api.yearn.finance/v1/chains/1/vaults/all'),
+        fetch('https://api.beefy.finance/apy')
+      ]);
+
+      const realApys = {
+        'Aave': aaveResponse.status === 'fulfilled' ? 
+          (await aaveResponse.value.json()).reserves[0]?.liquidityRate * 100 || 5.2 : 5.2,
+        'Yearn': yearnResponse.status === 'fulfilled' ? 
+          (await yearnResponse.value.json())[0]?.apy?.net_apy * 100 || 4.8 : 4.8,
+        'Beefy': beefyResponse.status === 'fulfilled' ? 
+          Object.values(await beefyResponse.value.json())[0] * 100 || 6.1 : 6.1
+      };
+
+      for (const strategy of strategies) {
         yieldOptions.push({
           chain: strategy.chain,
           protocol: strategy.name,
-          apy: apyPercent,
+          apy: realApys[strategy.name as keyof typeof realApys],
           address: strategy.address
         });
-      } catch (error) {
-        console.error(`Error fetching APY for ${strategy.name}:`, error);
-        // Fallback to mock data for this strategy
-        const mockApys = { 'Aave': 5.2, 'Yearn': 4.8, 'Beefy': 6.1 };
-        yieldOptions.push({
-          chain: strategy.chain,
-          protocol: strategy.name,
-          apy: mockApys[strategy.name as keyof typeof mockApys],
-          address: strategy.address
-        });
+      }
+    } catch (error) {
+      console.error('Error fetching real APY data:', error);
+      
+      // Fallback to contract APY data
+      for (const strategy of strategies) {
+        try {
+          const strategyContract = new ethers.Contract(strategy.address, STRATEGY_ABI, provider);
+          const apy = await strategyContract.getAPY();
+          const apyPercent = Number(ethers.utils.formatUnits(apy, 2)); // Convert from basis points
+          
+          yieldOptions.push({
+            chain: strategy.chain,
+            protocol: strategy.name,
+            apy: apyPercent,
+            address: strategy.address
+          });
+        } catch (error) {
+          console.error(`Error fetching APY for ${strategy.name}:`, error);
+          // Final fallback to mock data
+          const mockApys = { 'Aave': 5.2, 'Yearn': 4.8, 'Beefy': 6.1 };
+          yieldOptions.push({
+            chain: strategy.chain,
+            protocol: strategy.name,
+            apy: mockApys[strategy.name as keyof typeof mockApys],
+            address: strategy.address
+          });
+        }
       }
     }
 
@@ -101,9 +131,9 @@ export default async function handler(
     
     // Fallback to mock data
     const yieldOptions = [
-      { chain: 'Polygon', protocol: 'Aave', apy: 5.2, address: '0x...' },
-      { chain: 'Optimism', protocol: 'Yearn', apy: 4.8, address: '0x...' },
-      { chain: 'Base', protocol: 'Beefy', apy: 6.1, address: '0x...' },
+      { chain: 'Sepolia', protocol: 'Aave', apy: 5.2, address: '0x...' },
+      { chain: 'Mumbai', protocol: 'Yearn', apy: 4.8, address: '0x...' },
+      { chain: 'Optimism Goerli', protocol: 'Beefy', apy: 6.1, address: '0x...' },
     ];
 
     const bestOption = yieldOptions.reduce((prev, current) => (prev.apy > current.apy) ? prev : current);

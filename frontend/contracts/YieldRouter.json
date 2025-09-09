@@ -4,18 +4,8 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_agglayer",
+          "name": "_crossChainRouter",
           "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_functionsRouter",
-          "type": "address"
-        },
-        {
-          "internalType": "uint64",
-          "name": "_subscriptionId",
-          "type": "uint64"
         }
       ],
       "stateMutability": "nonpayable",
@@ -31,7 +21,7 @@
           "type": "address"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "token",
           "type": "address"
@@ -53,57 +43,6 @@
       "type": "event"
     },
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "newAPY",
-          "type": "string"
-        }
-      ],
-      "name": "APYUpdated",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "requestId",
-          "type": "bytes32"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "apy",
-          "type": "string"
-        }
-      ],
-      "name": "Response",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "requestId",
-          "type": "bytes32"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "error",
-          "type": "bytes"
-        }
-      ],
-      "name": "RequestError",
-      "type": "event"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -117,7 +56,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "toChainId",
+          "name": "destinationChainId",
           "type": "uint256"
         },
         {
@@ -145,6 +84,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getBestAPY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -169,32 +121,14 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getBestYieldStrategy",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "bestStrategy",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "bestAPY",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "user",
           "type": "address"
         }
       ],
-      "name": "deposits",
+      "name": "getTotalUserDeposits",
       "outputs": [
         {
           "internalType": "uint256",
@@ -207,12 +141,12 @@
     },
     {
       "inputs": [],
-      "name": "latestAPY",
+      "name": "crossChainRouter",
       "outputs": [
         {
-          "internalType": "string",
+          "internalType": "contract ICrossChainRouter",
           "name": "",
-          "type": "string"
+          "type": "address"
         }
       ],
       "stateMutability": "view",

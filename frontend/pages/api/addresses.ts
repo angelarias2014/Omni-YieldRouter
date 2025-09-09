@@ -19,7 +19,7 @@ export default function handler(
       aaveStrategy: "0x...",
       yearnStrategy: "0x...",
       beefyStrategy: "0x...",
-      agglayerRouter: "0x...",
+      crossChainRouter: "0x...",
       yieldRouter: "0x...",
       error: "Contracts not deployed yet"
     });

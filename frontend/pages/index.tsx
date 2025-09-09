@@ -97,7 +97,7 @@ export default function Home() {
     <main className="p-6 max-w-2xl mx-auto">
       {!isConnected ? (
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-6">CrossYield Aggregator</h1>
+          <h1 className="text-3xl font-bold mb-6">CrossYield CrossChain Router</h1>
           <p className="text-gray-600 mb-4">Connect your wallet to start yield farming across multiple chains</p>
           <button 
             onClick={() => connect()} 
@@ -108,7 +108,7 @@ export default function Home() {
         </div>
       ) : (
         <div>
-          <h1 className="text-3xl font-bold mb-6 text-center">CrossYield Aggregator</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center">CrossYield CrossChain Router</h1>
           
           {/* Current APY Display */}
           <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 rounded-lg mb-6">
@@ -182,9 +182,13 @@ export default function Home() {
                   onChange={(e) => setChainId(e.target.value)}
                 >
                   <option value="">Select Chain</option>
-                  <option value="137">Polygon (137)</option>
-                  <option value="10">Optimism (10)</option>
-                  <option value="8453">Base (8453)</option>
+                  <option value="11155111">Ethereum Sepolia (11155111)</option>
+                  <option value="80001">Polygon Mumbai (80001)</option>
+                  <option value="420">Optimism Goerli (420)</option>
+                  <option value="84531">Base Goerli (84531)</option>
+                  <option value="137">Polygon Mainnet (137)</option>
+                  <option value="10">Optimism Mainnet (10)</option>
+                  <option value="8453">Base Mainnet (8453)</option>
                 </select>
               </div>
             </div>

@@ -10,41 +10,52 @@ async function main() {
   // Deploy yield strategy contracts first
   console.log("\n=== Deploying Yield Strategy Contracts ===");
   
-  const AaveStrategy = await ethers.getContractFactory("AaveStrategy");
-  const aaveStrategy = await AaveStrategy.deploy();
-  await aaveStrategy.deployed();
-  console.log("AaveStrategy deployed to:", aaveStrategy.address);
+  // Deploy real strategy contracts (using mock addresses for now)
+  const RealAaveStrategy = await ethers.getContractFactory("RealAaveStrategy");
+  const realAaveStrategy = await RealAaveStrategy.deploy(
+    ethers.constants.AddressZero, // Aave Pool address (mock for now)
+    ethers.constants.AddressZero, // USDC address (mock for now)
+    ethers.constants.AddressZero  // aUSDC address (mock for now)
+  );
+  await realAaveStrategy.deployed();
+  console.log("RealAaveStrategy deployed to:", realAaveStrategy.address);
 
-  const YearnStrategy = await ethers.getContractFactory("YearnStrategy");
-  const yearnStrategy = await YearnStrategy.deploy();
-  await yearnStrategy.deployed();
-  console.log("YearnStrategy deployed to:", yearnStrategy.address);
+  const RealYearnStrategy = await ethers.getContractFactory("RealYearnStrategy");
+  const realYearnStrategy = await RealYearnStrategy.deploy(
+    ethers.constants.AddressZero, // Yearn Vault address (mock for now)
+    ethers.constants.AddressZero  // USDC address (mock for now)
+  );
+  await realYearnStrategy.deployed();
+  console.log("RealYearnStrategy deployed to:", realYearnStrategy.address);
 
-  const BeefyStrategy = await ethers.getContractFactory("BeefyStrategy");
-  const beefyStrategy = await BeefyStrategy.deploy();
-  await beefyStrategy.deployed();
-  console.log("BeefyStrategy deployed to:", beefyStrategy.address);
+  const RealBeefyStrategy = await ethers.getContractFactory("RealBeefyStrategy");
+  const realBeefyStrategy = await RealBeefyStrategy.deploy(
+    ethers.constants.AddressZero, // Beefy Vault address (mock for now)
+    ethers.constants.AddressZero  // USDC address (mock for now)
+  );
+  await realBeefyStrategy.deployed();
+  console.log("RealBeefyStrategy deployed to:", realBeefyStrategy.address);
 
-  // Deploy AggLayer Router
-  console.log("\n=== Deploying AggLayer Router ===");
-  const AggLayerRouter = await ethers.getContractFactory("AggLayerRouter");
-  const agglayerRouter = await AggLayerRouter.deploy();
-  await agglayerRouter.deployed();
-  console.log("AggLayerRouter deployed to:", agglayerRouter.address);
+  // Deploy CrossChain Router
+  console.log("\n=== Deploying CrossChain Router ===");
+  const CrossChainRouter = await ethers.getContractFactory("CrossChainRouter");
+  const crossChainRouter = await CrossChainRouter.deploy();
+  await crossChainRouter.deployed();
+  console.log("CrossChainRouter deployed to:", crossChainRouter.address);
 
-  // Configure AggLayer Router
-  console.log("\n=== Configuring AggLayer Router ===");
+  // Configure CrossChain Router
+  console.log("\n=== Configuring CrossChain Router ===");
   
   // Add supported chains (using mock chain IDs for demo)
-  await agglayerRouter.addSupportedChain(137, ethers.constants.AddressZero); // Polygon
-  await agglayerRouter.addSupportedChain(10, ethers.constants.AddressZero);  // Optimism
-  await agglayerRouter.addSupportedChain(8453, ethers.constants.AddressZero); // Base
+  await crossChainRouter.addSupportedChain(137, ethers.constants.AddressZero); // Polygon
+  await crossChainRouter.addSupportedChain(10, ethers.constants.AddressZero);  // Optimism
+  await crossChainRouter.addSupportedChain(8453, ethers.constants.AddressZero); // Base
   console.log("Added supported chains");
 
   // Add yield strategies
-  await agglayerRouter.addYieldStrategy(aaveStrategy.address, "Aave", 520);
-  await agglayerRouter.addYieldStrategy(yearnStrategy.address, "Yearn", 480);
-  await agglayerRouter.addYieldStrategy(beefyStrategy.address, "Beefy", 610);
+  await crossChainRouter.addYieldStrategy(realAaveStrategy.address, "Aave", 520);
+  await crossChainRouter.addYieldStrategy(realYearnStrategy.address, "Yearn", 480);
+  await crossChainRouter.addYieldStrategy(realBeefyStrategy.address, "Beefy", 610);
   console.log("Added yield strategies");
 
   // Deploy YieldRouter
@@ -56,7 +67,7 @@ async function main() {
 
   const YieldRouter = await ethers.getContractFactory("YieldRouter");
   const yieldRouter = await YieldRouter.deploy(
-    agglayerRouter.address,
+    crossChainRouter.address,
     mockFunctionsRouter,
     mockSubscriptionId
   );
@@ -65,18 +76,18 @@ async function main() {
 
   // Summary
   console.log("\n=== Deployment Summary ===");
-  console.log("AaveStrategy:", aaveStrategy.address);
-  console.log("YearnStrategy:", yearnStrategy.address);
-  console.log("BeefyStrategy:", beefyStrategy.address);
-  console.log("AggLayerRouter:", agglayerRouter.address);
+  console.log("RealAaveStrategy:", realAaveStrategy.address);
+  console.log("RealYearnStrategy:", realYearnStrategy.address);
+  console.log("RealBeefyStrategy:", realBeefyStrategy.address);
+  console.log("CrossChainRouter:", crossChainRouter.address);
   console.log("YieldRouter:", yieldRouter.address);
 
   // Save addresses to a file for frontend use
   const addresses = {
-    aaveStrategy: aaveStrategy.address,
-    yearnStrategy: yearnStrategy.address,
-    beefyStrategy: beefyStrategy.address,
-    agglayerRouter: agglayerRouter.address,
+    aaveStrategy: realAaveStrategy.address,
+    yearnStrategy: realYearnStrategy.address,
+    beefyStrategy: realBeefyStrategy.address,
+    crossChainRouter: crossChainRouter.address,
     yieldRouter: yieldRouter.address,
     network: await ethers.provider.getNetwork()
   };

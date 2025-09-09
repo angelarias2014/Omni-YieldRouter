@@ -7,17 +7,33 @@
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.js",
     "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
-    "test:localhost": "hardhat run scripts/test.js --network localhost"
+    "deploy:sepolia": "hardhat run scripts/deploy-testnet.js --network sepolia",
+    "deploy:mumbai": "hardhat run scripts/deploy-testnet.js --network polygonMumbai",
+    "deploy:optimism-goerli": "hardhat run scripts/deploy-testnet.js --network optimismGoerli",
+    "deploy:base-goerli": "hardhat run scripts/deploy-testnet.js --network baseGoerli",
+    "test:localhost": "hardhat run scripts/test.js --network localhost",
+    "test:sepolia": "hardhat run scripts/test-testnet.js --network sepolia",
+    "test:mumbai": "hardhat run scripts/test-testnet.js --network polygonMumbai",
+    "test:optimism-goerli": "hardhat run scripts/test-testnet.js --network optimismGoerli",
+    "test:base-goerli": "hardhat run scripts/test-testnet.js --network baseGoerli"
   },
-  "keywords": ["defi", "yield-farming", "cross-chain", "agglayer"],
+  "keywords": [
+    "defi",
+    "yield-farming",
+    "cross-chain",
+    "layerzero"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "Cross-chain yield farming aggregator using AggLayer",
+  "description": "Cross-chain yield farming aggregator using LayerZero for cross-chain routing",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@openzeppelin/contracts": "^5.0.0",
     "@chainlink/contracts": "^0.8.0",
-    "hardhat": "^2.19.0",
-    "dotenv": "^16.3.1"
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^16.3.1",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
   }
 }
