@@ -1,11 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { ethers } from 'ethers';
-
-type YieldData = {
-  best: string;
-  options: { chain: string; protocol: string; apy: number; address: string }[];
-  error?: string;
-};
+import { YieldData, YieldOption } from '@/types';
 
 // Contract ABIs (simplified)
 const CROSSCHAIN_ROUTER_ABI = [
@@ -26,14 +21,15 @@ export default async function handler(
     let deployedAddresses;
     try {
       const fs = require('fs');
-      const addressesData = fs.readFileSync('./deployed-addresses.json', 'utf8');
+      const addressesPath = require('path').join(process.cwd(), '../deployed-addresses.json');
+      const addressesData = fs.readFileSync(addressesPath, 'utf8');
       deployedAddresses = JSON.parse(addressesData);
     } catch (error) {
       // Fallback to mock data if no deployed addresses
-      const yieldOptions = [
-        { chain: 'Sepolia', protocol: 'Aave', apy: 5.2, address: '0x...' },
-        { chain: 'Mumbai', protocol: 'Yearn', apy: 4.8, address: '0x...' },
-        { chain: 'Optimism Goerli', protocol: 'Beefy', apy: 6.1, address: '0x...' },
+      const yieldOptions: YieldOption[] = [
+        { chain: 'Sepolia', protocol: 'Aave', apy: 5.2, address: '0x...aave' },
+        { chain: 'Mumbai', protocol: 'Yearn', apy: 4.8, address: '0x...yearn' },
+        { chain: 'Optimism Goerli', protocol: 'Beefy', apy: 6.1, address: '0x...beefy' },
       ];
 
       const bestOption = yieldOptions.reduce((prev, current) => (prev.apy > current.apy) ? prev : current);
@@ -61,7 +57,7 @@ export default async function handler(
       { address: deployedAddresses.beefyStrategy, name: 'Beefy', chain: 'Optimism Goerli' }
     ];
 
-    const yieldOptions = [];
+    const yieldOptions: YieldOption[] = [];
     
     // Try to fetch real APY data from external APIs first
     try {
@@ -77,7 +73,7 @@ export default async function handler(
         'Yearn': yearnResponse.status === 'fulfilled' ? 
           (await yearnResponse.value.json())[0]?.apy?.net_apy * 100 || 4.8 : 4.8,
         'Beefy': beefyResponse.status === 'fulfilled' ? 
-          Object.values(await beefyResponse.value.json())[0] * 100 || 6.1 : 6.1
+          Number(Object.values(await beefyResponse.value.json())[0]) * 100 || 6.1 : 6.1
       };
 
       for (const strategy of strategies) {
@@ -130,10 +126,10 @@ export default async function handler(
     console.error('Error fetching yield data:', error);
     
     // Fallback to mock data
-    const yieldOptions = [
-      { chain: 'Sepolia', protocol: 'Aave', apy: 5.2, address: '0x...' },
-      { chain: 'Mumbai', protocol: 'Yearn', apy: 4.8, address: '0x...' },
-      { chain: 'Optimism Goerli', protocol: 'Beefy', apy: 6.1, address: '0x...' },
+    const yieldOptions: YieldOption[] = [
+      { chain: 'Sepolia', protocol: 'Aave', apy: 5.2, address: '0x...aave' },
+      { chain: 'Mumbai', protocol: 'Yearn', apy: 4.8, address: '0x...yearn' },
+      { chain: 'Optimism Goerli', protocol: 'Beefy', apy: 6.1, address: '0x...beefy' },
     ];
 
     const bestOption = yieldOptions.reduce((prev, current) => (prev.apy > current.apy) ? prev : current);
