@@ -95,20 +95,20 @@ async function main() {
   await crossChainRouter.addYieldStrategy(realBeefyStrategy.address, "Beefy", 610);
   console.log("Added yield strategies");
 
-  // Deploy YieldRouter
-  console.log("\n=== Deploying YieldRouter ===");
+  // Deploy BlackBullOnmiYield
+  console.log("\n=== Deploying BlackBullOnmiYield ===");
   
   const functionsRouter = process.env.CHAINLINK_FUNCTIONS_ROUTER || ethers.constants.AddressZero;
   const subscriptionId = process.env.CHAINLINK_SUBSCRIPTION_ID || 0;
 
-  const YieldRouter = await ethers.getContractFactory("YieldRouter");
-  const yieldRouter = await YieldRouter.deploy(
+  const BlackBullOnmiYield = await ethers.getContractFactory("BlackBullOnmiYield");
+  const blackBullOnmiYield = await BlackBullOnmiYield.deploy(
     crossChainRouter.address,
     functionsRouter,
     subscriptionId
   );
-  await yieldRouter.deployed();
-  console.log("YieldRouter deployed to:", yieldRouter.address);
+  await blackBullOnmiYield.deployed();
+  console.log("BlackBullOnmiYield deployed to:", blackBullOnmiYield.address);
 
   // Configure LayerZero Bridge
   console.log("\n=== Configuring LayerZero Bridge ===");
@@ -130,7 +130,7 @@ async function main() {
   console.log("RealBeefyStrategy:", realBeefyStrategy.address);
   console.log("LayerZeroBridge:", layerZeroBridge.address);
   console.log("CrossChainRouter:", crossChainRouter.address);
-  console.log("YieldRouter:", yieldRouter.address);
+  console.log("BlackBullOnmiYield:", blackBullOnmiYield.address);
 
   // Save addresses to file
   const addresses = {
@@ -142,7 +142,8 @@ async function main() {
     beefyStrategy: realBeefyStrategy.address,
     layerZeroBridge: layerZeroBridge.address,
     crossChainRouter: crossChainRouter.address,
-    yieldRouter: yieldRouter.address,
+    yieldRouter: blackBullOnmiYield.address,
+    blackBullOnmiYield: blackBullOnmiYield.address,
     deployer: deployer.address
   };
 
