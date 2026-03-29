@@ -58,21 +58,21 @@ async function main() {
   await crossChainRouter.addYieldStrategy(realBeefyStrategy.address, "Beefy", 610);
   console.log("Added yield strategies");
 
-  // Deploy YieldRouter
-  console.log("\n=== Deploying YieldRouter ===");
+  // Deploy BlackBullOnmiYield
+  console.log("\n=== Deploying BlackBullOnmiYield ===");
   
   // For demo purposes, we'll use a mock functions router address
   const mockFunctionsRouter = ethers.constants.AddressZero;
   const mockSubscriptionId = 0;
 
-  const YieldRouter = await ethers.getContractFactory("YieldRouter");
-  const yieldRouter = await YieldRouter.deploy(
+  const BlackBullOnmiYield = await ethers.getContractFactory("BlackBullOnmiYield");
+  const blackBullOnmiYield = await BlackBullOnmiYield.deploy(
     crossChainRouter.address,
     mockFunctionsRouter,
     mockSubscriptionId
   );
-  await yieldRouter.deployed();
-  console.log("YieldRouter deployed to:", yieldRouter.address);
+  await blackBullOnmiYield.deployed();
+  console.log("BlackBullOnmiYield deployed to:", blackBullOnmiYield.address);
 
   // Summary
   console.log("\n=== Deployment Summary ===");
@@ -80,7 +80,7 @@ async function main() {
   console.log("RealYearnStrategy:", realYearnStrategy.address);
   console.log("RealBeefyStrategy:", realBeefyStrategy.address);
   console.log("CrossChainRouter:", crossChainRouter.address);
-  console.log("YieldRouter:", yieldRouter.address);
+  console.log("BlackBullOnmiYield:", blackBullOnmiYield.address);
 
   // Save addresses to a file for frontend use
   const addresses = {
@@ -88,7 +88,8 @@ async function main() {
     yearnStrategy: realYearnStrategy.address,
     beefyStrategy: realBeefyStrategy.address,
     crossChainRouter: crossChainRouter.address,
-    yieldRouter: yieldRouter.address,
+    yieldRouter: blackBullOnmiYield.address,
+    blackBullOnmiYield: blackBullOnmiYield.address,
     network: await ethers.provider.getNetwork()
   };
 

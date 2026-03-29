@@ -29,8 +29,8 @@ export default function Home() {
     <main className="p-6 max-w-2xl mx-auto">
       {!isConnected ? (
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-6">CrossYield CrossChain Router</h1>
-          <p className="text-gray-600 mb-4">Connect your wallet to start yield farming across multiple chains</p>
+          <h1 className="text-3xl font-bold mb-6">BlackBullOnmiYield</h1>
+          <p className="text-gray-600 mb-4">Connect your wallet to start yield farming across multiple chains with BlackBullOnmiYield</p>
           <button 
             onClick={() => connect()} 
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold"
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
       ) : (
         <div>
-          <h1 className="text-3xl font-bold mb-6 text-center">CrossYield CrossChain Router</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center">BlackBullOnmiYield</h1>
           
           {/* Current APY Display */}
           <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 rounded-lg mb-6">

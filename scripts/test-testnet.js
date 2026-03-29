@@ -22,7 +22,8 @@ async function main() {
     
     console.log("📋 Deployed Contract Addresses:");
     console.log(`MockUSDC: ${addresses.mockUSDC}`);
-    console.log(`YieldRouter: ${addresses.yieldRouter}`);
+    const blackBullOnmiYieldAddress = addresses.blackBullOnmiYield || addresses.yieldRouter;
+    console.log(`BlackBullOnmiYield: ${blackBullOnmiYieldAddress}`);
     console.log(`AggLayerRouter: ${addresses.agglayerRouter}`);
     console.log(`LayerZeroBridge: ${addresses.layerZeroBridge}\n`);
 
@@ -33,8 +34,8 @@ async function main() {
     const MockERC20 = await ethers.getContractFactory("MockERC20");
     const mockUSDC = MockERC20.attach(addresses.mockUSDC);
 
-    const YieldRouter = await ethers.getContractFactory("YieldRouter");
-    const yieldRouter = YieldRouter.attach(addresses.yieldRouter);
+    const BlackBullOnmiYield = await ethers.getContractFactory("BlackBullOnmiYield");
+    const blackBullOnmiYield = BlackBullOnmiYield.attach(blackBullOnmiYieldAddress);
 
     const CrossChainRouter = await ethers.getContractFactory("CrossChainRouter");
     const crossChainRouter = CrossChainRouter.attach(addresses.crossChainRouter);
@@ -53,15 +54,15 @@ async function main() {
     console.log("💰 Testing Same-Chain Deposit:");
     const depositAmount = ethers.utils.parseUnits("100", 6);
     
-    // Approve YieldRouter to spend tokens
-    await mockUSDC.approve(addresses.yieldRouter, depositAmount);
-    console.log("✅ Approved YieldRouter to spend tokens");
+    // Approve BlackBullOnmiYield to spend tokens
+    await mockUSDC.approve(blackBullOnmiYieldAddress, depositAmount);
+    console.log("✅ Approved BlackBullOnmiYield to spend tokens");
 
     // Encode strategy data (Beefy strategy address)
     const strategyData = ethers.utils.defaultAbiCoder.encode(['address'], [addresses.beefyStrategy]);
     
     // Make deposit
-    const tx = await yieldRouter.deposit(
+    const tx = await blackBullOnmiYield.deposit(
       addresses.mockUSDC,
       depositAmount,
       network.chainId, // Same chain
@@ -74,7 +75,7 @@ async function main() {
 
     // Test 3: Check user deposits
     console.log("\n📈 Testing User Deposits:");
-    const userDeposits = await yieldRouter.getUserDeposits(deployer.address, network.chainId);
+    const userDeposits = await blackBullOnmiYield.getUserDeposits(deployer.address, network.chainId);
     console.log(`✅ User deposits on ${network.name}: ${ethers.utils.formatUnits(userDeposits, 6)} USDC`);
 
     // Test 4: Test cross-chain deposit (simulation)
@@ -82,11 +83,11 @@ async function main() {
     const crossChainAmount = ethers.utils.parseUnits("50", 6);
     
     // Approve for cross-chain
-    await mockUSDC.approve(addresses.yieldRouter, crossChainAmount);
+    await mockUSDC.approve(blackBullOnmiYieldAddress, crossChainAmount);
     
     // Deposit to different chain (Mumbai)
     const mumbaiChainId = 80001;
-    const crossChainTx = await yieldRouter.deposit(
+    const crossChainTx = await blackBullOnmiYield.deposit(
       addresses.mockUSDC,
       crossChainAmount,
       mumbaiChainId,
@@ -98,13 +99,13 @@ async function main() {
     console.log("✅ Cross-chain deposit confirmed");
 
     // Test 5: Check cross-chain deposits
-    const crossChainDeposits = await yieldRouter.getUserDeposits(deployer.address, mumbaiChainId);
+    const crossChainDeposits = await blackBullOnmiYield.getUserDeposits(deployer.address, mumbaiChainId);
     console.log(`✅ User deposits on Mumbai: ${ethers.utils.formatUnits(crossChainDeposits, 6)} USDC`);
 
     // Test 6: Test APY data fetching
     console.log("\n📊 Testing APY Data Fetching:");
     try {
-      await yieldRouter.requestAPYData();
+      await blackBullOnmiYield.requestAPYData();
       console.log("✅ APY data request sent");
     } catch (error) {
       console.log("⚠️ APY data request failed (expected on testnet):", error.message);

@@ -1,4 +1,4 @@
-# CrossYield CrossChain Router
+# BlackBullOnmiYield
 
 A production-ready cross-chain yield farming aggregator that routes funds across multiple chains using LayerZero and integrates with real DeFi protocols.
 
@@ -14,7 +14,7 @@ A production-ready cross-chain yield farming aggregator that routes funds across
 
 ### Smart Contracts
 - **CrossChainRouter**: Main router handling cross-chain fund movements
-- **YieldRouter**: User-facing interface for deposits and withdrawals
+- **BlackBullOnmiYield**: User-facing interface for deposits and withdrawals
 - **LayerZeroBridge**: Cross-chain bridge implementation using LayerZero
 - **Strategy Contracts**: Real integrations with DeFi protocols:
   - `RealAaveStrategy`: Aave V3 integration

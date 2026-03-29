@@ -13,7 +13,7 @@ interface ICrossChainRouter {
     function getBestYieldStrategy() external view returns (address bestStrategy, uint256 bestAPY);
 }
 
-contract YieldRouter is FunctionsClient, ReentrancyGuard, Ownable {
+contract BlackBullOnmiYield is FunctionsClient, ReentrancyGuard, Ownable {
     using FunctionsRequest for FunctionsRequest.Request;
 
     ICrossChainRouter public crossChainRouter;
