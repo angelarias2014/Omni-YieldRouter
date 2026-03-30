@@ -81,7 +81,7 @@ async function main() {
     { chainId: 11155111, name: "Sepolia" },
     { chainId: 80001, name: "Mumbai" },
     { chainId: 420, name: "Optimism Goerli" },
-    { chainId: 84531, name: "Base Goerli" }
+    { chainId: 84532, name: "Base Sepolia" }
   ];
 
   for (const chain of supportedChains) {
@@ -95,20 +95,20 @@ async function main() {
   await crossChainRouter.addYieldStrategy(realBeefyStrategy.address, "Beefy", 610);
   console.log("Added yield strategies");
 
-  // Deploy YieldRouter
-  console.log("\n=== Deploying YieldRouter ===");
+  // Deploy BlackBullOnmiYield
+  console.log("\n=== Deploying BlackBullOnmiYield ===");
   
   const functionsRouter = process.env.CHAINLINK_FUNCTIONS_ROUTER || ethers.constants.AddressZero;
   const subscriptionId = process.env.CHAINLINK_SUBSCRIPTION_ID || 0;
 
-  const YieldRouter = await ethers.getContractFactory("YieldRouter");
-  const yieldRouter = await YieldRouter.deploy(
+  const BlackBullOnmiYield = await ethers.getContractFactory("BlackBullOnmiYield");
+  const blackBullOnmiYield = await BlackBullOnmiYield.deploy(
     crossChainRouter.address,
     functionsRouter,
     subscriptionId
   );
-  await yieldRouter.deployed();
-  console.log("YieldRouter deployed to:", yieldRouter.address);
+  await blackBullOnmiYield.deployed();
+  console.log("BlackBullOnmiYield deployed to:", blackBullOnmiYield.address);
 
   // Configure LayerZero Bridge
   console.log("\n=== Configuring LayerZero Bridge ===");
@@ -130,7 +130,7 @@ async function main() {
   console.log("RealBeefyStrategy:", realBeefyStrategy.address);
   console.log("LayerZeroBridge:", layerZeroBridge.address);
   console.log("CrossChainRouter:", crossChainRouter.address);
-  console.log("YieldRouter:", yieldRouter.address);
+  console.log("BlackBullOnmiYield:", blackBullOnmiYield.address);
 
   // Save addresses to file
   const addresses = {
@@ -142,7 +142,8 @@ async function main() {
     beefyStrategy: realBeefyStrategy.address,
     layerZeroBridge: layerZeroBridge.address,
     crossChainRouter: crossChainRouter.address,
-    yieldRouter: yieldRouter.address,
+    yieldRouter: blackBullOnmiYield.address,
+    blackBullOnmiYield: blackBullOnmiYield.address,
     deployer: deployer.address
   };
 
@@ -163,7 +164,7 @@ function getLayerZeroEndpoint(chainId) {
     11155111: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1", // Sepolia
     80001: "0xf69186dfBa60DdB133E91E9A4B5673624293d8F8", // Mumbai
     420: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1", // Optimism Goerli
-    84531: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab" // Base Goerli
+    84532: "0x0000000000000000000000000000000000000000" // Base Sepolia (set explicitly via env/config if needed)
   };
   
   return endpoints[chainId] || ethers.constants.AddressZero;

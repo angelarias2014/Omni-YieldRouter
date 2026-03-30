@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol";
-import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsRequest.sol";
+import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
+import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface ICrossChainRouter {
@@ -13,7 +13,7 @@ interface ICrossChainRouter {
     function getBestYieldStrategy() external view returns (address bestStrategy, uint256 bestAPY);
 }
 
-contract YieldRouter is FunctionsClient, ReentrancyGuard, Ownable {
+contract BlackBullOnmiYield is FunctionsClient, ReentrancyGuard, Ownable {
     using FunctionsRequest for FunctionsRequest.Request;
 
     ICrossChainRouter public crossChainRouter;

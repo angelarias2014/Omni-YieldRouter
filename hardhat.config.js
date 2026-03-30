@@ -24,10 +24,10 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       chainId: 420,
     },
-    baseGoerli: {
-      url: process.env.BASE_GOERLI_RPC_URL || "https://goerli.base.org",
+    baseSepolia: {
+      url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      chainId: 84531,
+      chainId: 84532,
     },
     // Mainnets (for later)
     ethereum: {

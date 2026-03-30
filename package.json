@@ -10,12 +10,14 @@
     "deploy:sepolia": "hardhat run scripts/deploy-testnet.js --network sepolia",
     "deploy:mumbai": "hardhat run scripts/deploy-testnet.js --network polygonMumbai",
     "deploy:optimism-goerli": "hardhat run scripts/deploy-testnet.js --network optimismGoerli",
-    "deploy:base-goerli": "hardhat run scripts/deploy-testnet.js --network baseGoerli",
+    "deploy:base-sepolia": "hardhat run scripts/deploy-testnet.js --network baseSepolia",
+    "deploy:sepolia:solcjs": "node scripts/deploy-testnet-solcjs.js sepolia",
+    "deploy:base-sepolia:solcjs": "node scripts/deploy-testnet-solcjs.js baseSepolia",
     "test:localhost": "hardhat run scripts/test.js --network localhost",
     "test:sepolia": "hardhat run scripts/test-testnet.js --network sepolia",
     "test:mumbai": "hardhat run scripts/test-testnet.js --network polygonMumbai",
     "test:optimism-goerli": "hardhat run scripts/test-testnet.js --network optimismGoerli",
-    "test:base-goerli": "hardhat run scripts/test-testnet.js --network baseGoerli"
+    "test:base-sepolia": "hardhat run scripts/test-testnet.js --network baseSepolia"
   },
   "keywords": [
     "defi",

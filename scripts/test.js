@@ -10,7 +10,8 @@ async function main() {
     const addresses = JSON.parse(addressesData);
     
     console.log("📋 Deployed Contract Addresses:");
-    console.log(`YieldRouter: ${addresses.yieldRouter}`);
+    const blackBullOnmiYieldAddress = addresses.blackBullOnmiYield || addresses.yieldRouter;
+    console.log(`BlackBullOnmiYield: ${blackBullOnmiYieldAddress}`);
     console.log(`CrossChainRouter: ${addresses.crossChainRouter}`);
     console.log(`AaveStrategy: ${addresses.aaveStrategy}`);
     console.log(`YearnStrategy: ${addresses.yearnStrategy}`);
@@ -20,9 +21,9 @@ async function main() {
     const [deployer] = await ethers.getSigners();
     console.log(`Testing with account: ${deployer.address}\n`);
 
-    // Test YieldRouter
-    const YieldRouter = await ethers.getContractFactory("YieldRouter");
-    const yieldRouter = YieldRouter.attach(addresses.yieldRouter);
+    // Test BlackBullOnmiYield
+    const BlackBullOnmiYield = await ethers.getContractFactory("BlackBullOnmiYield");
+    const blackBullOnmiYield = BlackBullOnmiYield.attach(blackBullOnmiYieldAddress);
 
     // Test CrossChainRouter
     const CrossChainRouter = await ethers.getContractFactory("CrossChainRouter");
@@ -56,9 +57,9 @@ async function main() {
     console.log(`✅ Best Strategy: ${bestStrategy[0]}`);
     console.log(`✅ Best APY: ${ethers.utils.formatUnits(bestStrategy[1], 2)}%\n`);
 
-    // Test YieldRouter functions
-    console.log("💰 Testing YieldRouter Functions:");
-    const userDeposits = await yieldRouter.getUserDeposits(deployer.address, 137);
+    // Test BlackBullOnmiYield functions
+    console.log("💰 Testing BlackBullOnmiYield Functions:");
+    const userDeposits = await blackBullOnmiYield.getUserDeposits(deployer.address, 137);
     console.log(`✅ User Deposits on Polygon: ${ethers.utils.formatEther(userDeposits)} ETH\n`);
 
     // Test strategy deposits (simulate)
